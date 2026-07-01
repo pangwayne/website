@@ -104,6 +104,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   .nav-row {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -136,6 +137,26 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   nav.main-nav a:hover { color: var(--accent); }
+
+  .nav-toggle { display: none; }
+
+  .nav-toggle-label {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 17px;
+    cursor: pointer;
+  }
+
+  .nav-toggle-label span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
 
   /* Hero */
   .hero {
@@ -385,6 +406,51 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   .contact-form-wrapper button:hover { background: var(--accent-dark); }
 
+  .contact-form-wrapper button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .form-feedback {
+    display: none;
+    margin: 16px 0 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #e5877f;
+  }
+
+  .form-feedback.visible { display: block; }
+
+  .form-success {
+    text-align: center;
+    padding: 20px 8px;
+  }
+
+  .form-success-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .form-success h3 {
+    margin: 0 0 10px;
+    font-size: clamp(19px, 4vw, 22px);
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .form-success p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
   /* Footer */
   footer.site-footer {
     border-top: 1px solid var(--border);
@@ -397,7 +463,39 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   @media (max-width: 760px) {
     .about-grid { grid-template-columns: 1fr; }
     .contact-grid { grid-template-columns: 1fr; }
-    nav.main-nav ul { gap: 16px; }
+
+    .nav-toggle-label { display: flex; }
+
+    nav.main-nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+
+    nav.main-nav ul {
+      flex-direction: column;
+      gap: 0;
+      padding: 8px 24px 16px;
+    }
+
+    nav.main-nav ul li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav.main-nav ul li:last-child { border-bottom: none; }
+
+    .nav-toggle:checked ~ nav.main-nav { max-height: 320px; }
+
+    .nav-toggle:checked ~ .nav-toggle-label span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-toggle:checked ~ .nav-toggle-label span:nth-child(2) { opacity: 0; }
+    .nav-toggle:checked ~ .nav-toggle-label span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
   }
 </style>
 </head>
@@ -410,12 +508,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <header class="site-header">
   <div class="nav-row">
     <a class="logo" href="#top">pangwayne.com</a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
     <nav class="main-nav" aria-label="Primary">
       <ul>
         <li><a href="#about">About</a></li>
         <li><a href="#services">Services</a></li>
         <li><a href="#approach">Collaboration</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li><a href="#contact" data-cta="nav">Contact</a></li>
       </ul>
     </nav>
   </div>
@@ -428,7 +532,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p class="tagline">Be Found. Be Measured. Be Chosen.</p>
       <h1>AI Visibility &amp; Digital Analytics Consultant</h1>
       <p>Leverage over a decade of analytics expertise to transform your data into actionable insights. I build custom measurement frameworks for AI visibility and privacy-focused web analytics, automate reporting workflows, and train teams to foster a data-driven culture. From measuring brand presence in AI platforms to optimizing business objectives with web analytics, I empower you to stay visible and competitive in the age of AI.</p>
-      <a class="btn" href="#contact">Get In Touch</a>
+      <a class="btn" href="#contact" data-cta="hero">Get In Touch</a>
     </div>
   </section>
 
@@ -537,7 +641,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p style="color:var(--muted);">Let me help you build a measurement framework that actually drives decisions. Share your current setup and goals, and I will recommend concrete next steps tailored to your organization.</p>
         </div>
         <div class="contact-form-wrapper">
-          <form action="https://splitforms.com/api/submit" method="POST">
+          <form id="contact-form" action="https://splitforms.com/api/submit" method="POST">
             <input type="hidden" name="access_key" value="50a7c5fb633b42b084533100fc58f2d4">
             <input type="hidden" name="subject" value="New contact form submission">
 
@@ -565,6 +669,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off">
             <button type="submit">Send Inquiry</button>
           </form>
+          <div id="form-success" class="form-success" role="status" aria-live="polite" hidden>
+            <div class="form-success-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06120e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 12 9 17 20 6"></polyline>
+              </svg>
+            </div>
+            <h3>Thank you for your inquiry.</h3>
+            <p>I will reach out to you shortly.</p>
+          </div>
+          <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
         </div>
       </div>
     </div>
@@ -579,6 +693,76 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+  document.querySelectorAll('.main-nav a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      document.getElementById('nav-toggle').checked = false;
+    });
+  });
+</script>
+<script>
+  document.querySelectorAll('[data-cta]').forEach(function(el) {
+    el.addEventListener('click', function() {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'cta_click',
+        cta_location: el.dataset.cta
+      });
+    });
+  });
+</script>
+<script>
+  (function() {
+    var form = document.getElementById('contact-form');
+    var feedback = document.getElementById('form-feedback');
+    var success = document.getElementById('form-success');
+    var submitBtn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      feedback.className = 'form-feedback';
+      feedback.textContent = '';
+
+      var payload = Object.fromEntries(new FormData(form).entries());
+
+      fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(function(res) {
+          return res.json().then(function(data) {
+            return { ok: res.ok, data: data };
+          });
+        })
+        .then(function(result) {
+          if (result.ok && result.data.success) {
+            form.hidden = true;
+            success.hidden = false;
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+              event: 'generate_lead',
+              form_id: 'contact_form'
+            });
+          } else {
+            throw new Error(result.data && result.data.message || 'Submission failed');
+          }
+        })
+        .catch(function() {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Inquiry';
+          feedback.textContent = 'Something went wrong. Please try again or email me directly.';
+          feedback.className = 'form-feedback visible error';
+        });
+    });
+  })();
+</script>
 
 </body>
 </html>
